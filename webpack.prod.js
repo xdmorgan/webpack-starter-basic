@@ -78,6 +78,16 @@ module.exports = {
                     }
                 ]
             }
+            ,
+            {
+                // Load all icons
+                test: /\.(eot|woff|woff2|svg|ttf)([\?]?.*)$/,
+                use: [
+                    {
+                        loader: 'file-loader',
+                    }
+                ]
+            }
         ]
     },
     plugins: [
@@ -130,7 +140,8 @@ module.exports = {
                 },
                 discardComments: {
                     removeAll: true
-                }
+                },
+                discardUnused: false
             },
             canPrint: true
         })

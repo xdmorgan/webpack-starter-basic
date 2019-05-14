@@ -73,7 +73,7 @@ async function kickstart() {
 
     ui.log.write('Setting page title to project name');
     newHeadPartial = newHeadPartial.replace(/{{projectName}}/g, projectName);
-    const newWebpackProdFile = webpackProdFile.replace(/{{projectName/g, projectName);
+    const newWebpackProdFile = webpackProdFile.replace(/{{projectName}}/g, projectName);
 
     ui.log.write('Writing new index.html');
     fs.writeFileSync(HEAD_PARTIAL_PATH, newHeadPartial, 'utf8');
