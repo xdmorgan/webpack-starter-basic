@@ -1,10 +1,15 @@
 const path = require('path');
-
-const FaviconsWebpackPlugin = require('favicons-webpack-plugin')
-const CleanWebpackPlugin = require('clean-webpack-plugin'); //installed via npm
+const { readdirSync, statSync } = require('fs');
+const FaviconsWebpackPlugin = require('favicons-webpack-plugin');
+const CleanWebpackPlugin = require('clean-webpack-plugin'); // installed via npm
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
+
+const pages = (map = () => {}, dir = './src/pages') =>
+    readdirSync(dir)
+        .filter(f => statSync(path.join(dir, f)).isDirectory())
+        .map(map);
 
 const buildPath = path.resolve(__dirname, 'dist');
 
@@ -23,11 +28,15 @@ module.exports = {
             {
                 test: /\.js$/,
                 exclude: /node_modules/,
-                loader: 'babel-loader',
-
-                options: {
-                    presets: ['env']
-                }
+                use: [
+                    {
+                        loader: 'babel-loader',
+                        options: {
+                            presets: ['env']
+                        }
+                    },
+                    'eslint-loader'
+                ]
             },
             {
                 test: /\.(scss|css|sass)$/,
@@ -72,26 +81,28 @@ module.exports = {
                         }
                     }
                 ]
-            }
-            ,
+            },
             {
                 // Load all icons
                 test: /\.(eot|woff|woff2|svg|ttf)([\?]?.*)$/,
                 use: [
                     {
-                        loader: 'file-loader',
+                        loader: 'file-loader'
                     }
                 ]
             }
         ]
     },
     plugins: [
-        new HtmlWebpackPlugin({
-            template: './index.html',
-            // Inject the js bundle at the end of the body of the given template
-            inject: 'body',
-        }),
         new CleanWebpackPlugin(buildPath),
+        ...pages(
+            page =>
+                new HtmlWebpackPlugin({
+                    template: `./src/pages/${page}/template.html`,
+                    filename: `${page}.html`,
+                    inject: 'body'
+                })
+        ),
         new FaviconsWebpackPlugin({
             // Your source logo
             logo: './src/assets/icon.png',
@@ -128,7 +139,7 @@ module.exports = {
             cssProcessor: require('cssnano'),
             cssProcessorOptions: {
                 map: {
-                    inline: false,
+                    inline: false
                 },
                 discardComments: {
                     removeAll: true

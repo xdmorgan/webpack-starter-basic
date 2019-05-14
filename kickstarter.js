@@ -1,12 +1,13 @@
 const inquirer = require('inquirer');
+
 const ui = new inquirer.ui.BottomBar();
 const fs = require('fs');
 const rimraf = require('rimraf');
 
+const HEAD_PARTIAL_PATH = './src/partials/head.html';
 const packageJson = require('./package.json');
 
 async function kickstart() {
-
     const questions = await inquirer.prompt([
         {
             type: 'input',
@@ -28,7 +29,7 @@ async function kickstart() {
         }
     ]);
 
-    const {projectName, projectAuthor, mobileHeaderColor} = questions;
+    const { projectName, projectAuthor, mobileHeaderColor } = questions;
 
     ui.log.write('Removing /docs directory');
     rimraf.sync('./docs');
@@ -45,7 +46,7 @@ async function kickstart() {
     packageJson.repository.url = '';
 
     ui.log.write('Removing package.json kickstart dependencies');
-    packageJson.kickstartDependencies.forEach((kickstartDependency) => {
+    packageJson.kickstartDependencies.forEach(kickstartDependency => {
         delete packageJson.devDependencies[kickstartDependency];
         rimraf.sync(`./node-modules/${kickstartDependency}`);
     });
@@ -64,18 +65,18 @@ async function kickstart() {
     ui.log.write('Removing package-lock.json');
     fs.unlinkSync('./package-lock.json');
 
-    const indexFile = fs.readFileSync('./index.html', 'utf8');
+    const headPartial = fs.readFileSync(HEAD_PARTIAL_PATH, 'utf8');
 
     ui.log.write(`Setting mobile header color to ${mobileHeaderColor}`);
-    let newIndex = indexFile.replace(/{{mobileHeaderColor}}/g, mobileHeaderColor);
+    let newHeadPartial = headPartial.replace(/{{mobileHeaderColor}}/g, mobileHeaderColor);
     const webpackProdFile = fs.readFileSync('./webpack.prod.js', 'utf8');
 
     ui.log.write('Setting page title to project name');
-    newIndex = newIndex.replace(/{{projectName}}/g, projectName);
+    newHeadPartial = newHeadPartial.replace(/{{projectName}}/g, projectName);
     const newWebpackProdFile = webpackProdFile.replace(/{{projectName}}/g, projectName);
 
     ui.log.write('Writing new index.html');
-    fs.writeFileSync('./index.html', newIndex, 'utf8');
+    fs.writeFileSync(HEAD_PARTIAL_PATH, newHeadPartial, 'utf8');
     ui.log.write('Writing new webpack.prod.js');
     fs.writeFileSync('./webpack.prod.js', newWebpackProdFile, 'utf8');
 
