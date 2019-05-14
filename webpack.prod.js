@@ -28,11 +28,15 @@ module.exports = {
             {
                 test: /\.js$/,
                 exclude: /node_modules/,
-                loader: 'babel-loader',
-
-                options: {
-                    presets: ['env']
-                }
+                use: [
+                    {
+                        loader: 'babel-loader',
+                        options: {
+                            presets: ['env']
+                        }
+                    },
+                    'eslint-loader'
+                ]
             },
             {
                 test: /\.(scss|css|sass)$/,
@@ -77,14 +81,13 @@ module.exports = {
                         }
                     }
                 ]
-            }
-            ,
+            },
             {
                 // Load all icons
                 test: /\.(eot|woff|woff2|svg|ttf)([\?]?.*)$/,
                 use: [
                     {
-                        loader: 'file-loader',
+                        loader: 'file-loader'
                     }
                 ]
             }
