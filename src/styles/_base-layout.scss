@@ -1,0 +1,19 @@
+html {
+    box-sizing: border-box;
+    font-size: 100%;
+}
+
+*,
+*:before,
+*:after {
+    box-sizing: inherit;
+}
+
+body {
+    font-size: 1rem;
+    font-family: $font-stack-default;
+}
+
+a {
+    color: inherit;
+}

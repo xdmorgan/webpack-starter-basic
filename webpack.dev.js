@@ -1,13 +1,18 @@
 const path = require('path');
-
+const { readdirSync, statSync } = require('fs');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+
+const pages = (map = () => {}, dir = './src/pages') =>
+    readdirSync(dir)
+        .filter(f => statSync(path.join(dir, f)).isDirectory())
+        .map(map);
 
 module.exports = {
     devtool: 'eval-cheap-module-source-map',
     entry: './src/index.js',
     devServer: {
         port: 8080,
-        contentBase: path.join(__dirname, "dist")
+        contentBase: path.join(__dirname, 'dist')
     },
     node: {
         fs: 'empty'
@@ -27,21 +32,21 @@ module.exports = {
                 use: [
                     {
                         // creates style nodes from JS strings
-                        loader: "style-loader",
+                        loader: 'style-loader',
                         options: {
                             sourceMap: true
                         }
                     },
                     {
                         // translates CSS into CommonJS
-                        loader: "css-loader",
+                        loader: 'css-loader',
                         options: {
                             sourceMap: true
                         }
                     },
                     {
                         // compiles Sass to CSS
-                        loader: "sass-loader",
+                        loader: 'sass-loader',
                         options: {
                             outputStyle: 'expanded',
                             sourceMap: true,
@@ -50,8 +55,7 @@ module.exports = {
                     }
                     // Please note we are not running postcss here
                 ]
-            }
-            ,
+            },
             {
                 // Load all images as base64 encoding if they are smaller than 8192 bytes
                 test: /\.(png|jpg|gif)$/,
@@ -66,12 +70,16 @@ module.exports = {
                     }
                 ]
             }
-        ],
+        ]
     },
     plugins: [
-        new HtmlWebpackPlugin({
-            template: './index.html',
-            inject: true
-        })
+        ...pages(
+            page =>
+                new HtmlWebpackPlugin({
+                    template: `./src/pages/${page}/template.html`,
+                    filename: `${page}.html`,
+                    inject: true
+                })
+        )
     ]
 };

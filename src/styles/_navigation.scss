@@ -1,0 +1,17 @@
+#navigation {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 24px;
+    background: var(--theme-nav-bg, #fefefe);
+    color: var(--theme-nav-fg, #222);
+
+    & > a {
+        display: block;
+    }
+
+    & > ul {
+        display: flex;
+        align-items: center;
+    }
+}
